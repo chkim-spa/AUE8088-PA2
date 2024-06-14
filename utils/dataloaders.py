@@ -761,6 +761,16 @@ class LoadImagesAndLabels(Dataset):
     #     #self.shuffled_vector = np.random.permutation(self.nF) if self.augment else np.arange(self.nF)
     #     return self
 
+    def gridmask(self, image, d1=10, d2=20, ratio=0.5):
+        h, w = image.shape[0], image.shape[1]
+        mask = np.ones((h, w), np.float32)
+        for i in range(0, h, d2):
+            for j in range(0, w, d2):
+                mask[i:i+d1, j:j+d1] = 0
+        mask = mask[:, :, np.newaxis]
+        image = image * mask
+        return image
+
     def __getitem__(self, index):
         """Fetches the dataset item at the given index, considering linear, shuffled, or weighted sampling."""
         index = self.indices[index]  # linear, shuffled, or image_weights
@@ -811,6 +821,9 @@ class LoadImagesAndLabels(Dataset):
 
             # HSV color-space
             augment_hsv(img, hgain=hyp["hsv_h"], sgain=hyp["hsv_s"], vgain=hyp["hsv_v"])
+
+            if np.random.rand() < 0.3:
+                img = self.gridmask(img)
 
             # Flip up-down
             if random.random() < hyp["flipud"]:

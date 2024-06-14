@@ -26,6 +26,9 @@ from pathlib import Path
 from torch.optim import lr_scheduler
 from tqdm import tqdm
 
+from utils.autoanchor import check_anchors
+from utils.autobatch import check_train_batch_size
+
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
 if str(ROOT) not in sys.path:
@@ -213,7 +216,10 @@ def train(hyp, opt, device, callbacks):
         pad=0.5,
         prefix=colorstr("val: "),
     )[0]
-
+    
+    if not opt.noautoanchor:
+        check_anchors(dataset, model=model, thr=hyp["anchor_t"], imgsz=imgsz)  # run AutoAnchor
+        print(" @@ run auto anchors @@")
     # pre-reduce anchor precision
     model.half().float()
 
@@ -482,4 +488,5 @@ def main(opt, callbacks=Callbacks()):
 
 if __name__ == "__main__":
     opt = parse_opt()
+    # print(opt)
     main(opt)

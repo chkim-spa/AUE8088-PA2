@@ -2,6 +2,10 @@
 
 ## PA #2. Object Detection
 
+### Show Result
+```
+python my_visual.py
+```  
 ### Important Files
 
 ```bash
@@ -89,3 +93,4 @@
     --workers 16 \
     --name yolov5n
   ```
+

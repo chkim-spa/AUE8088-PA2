@@ -199,7 +199,13 @@ def train(hyp, opt, device, callbacks):
         rgbt_input=opt.rgbt,
     )
     labels = np.concatenate(dataset.labels, 0)
-    mlc = int(labels[:, 0].max())  # max label class
+    # mlc = int(labels[:, 0].max())  # max label class
+    if labels.size == 0:
+        mlc = 0  # 라벨이 없는 경우
+    else:
+        mlc = int(labels[:, 0].max())  # max label class
+
+
     assert mlc < nc, f"Label class {mlc} exceeds nc={nc} in {data}. Possible class labels are 0-{nc - 1}"
 
     # Valloader
@@ -489,3 +495,15 @@ def main(opt, callbacks=Callbacks()):
 if __name__ == "__main__":
     opt = parse_opt()
     main(opt)
+
+# #python train_simple.py \
+#   --img 640 \
+#   --batch-size 16 \
+#   --epochs 20 \
+#   --data data/kaist-rgbt_fold1.yaml \
+#   --cfg models/yolov5n_kaist-rgbt.yaml \
+#   --weights yolov5n.pt \
+#   --workers 16 \
+#   --name y5n-rgbt_f1 \
+#   --rgbt \
+#   --single-cls
